@@ -179,7 +179,7 @@
     
     // 聊天上下文，保持对话记忆
     let messagesHistory = [
-        { role: "system", content: "你是一个乐于助人的AI助手。请尽量用简短、口语化的中文回答，就像在微信聊天一样。" }
+        { role: "system", content: "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情" }
     ];
 
     // 辅助函数：在界面上添加消息
@@ -205,13 +205,9 @@
         const sendBtn = document.getElementById('sendBtn');
         const text = input.value.trim();
 
-        // ================= 配置区域 =================
-        // 你的配置信息写死在这里：
         const apiKey = 'sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d'; 
         const apiUrl = 'https://free.v36.cm/v1/chat/completions';
-        const modelName = "gpt-4o-mini"; // 修正了这里的拼写错误(cosnt -> const)
-        // ===========================================
-
+        const modelName = "gpt-4o-mini"; 
         if (!text) return;
 
         // 1. 显示用户的消息
@@ -232,12 +228,11 @@
                 headers: {
                     'Content-Type': 'application/json',
                     // 这里引用上面定义的 apiKey 变量，语法更安全
-                    'Authorization': 'Bearer ' + apiKey 
-                },
+                    'Authorization': 'Bearer sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d'                },
                 body: JSON.stringify({
                     model: modelName, // 引用上面定义的 modelName
                     messages: messagesHistory,
-                    temperature: 0.7
+                    temperature:1.0
                 })
             });
 

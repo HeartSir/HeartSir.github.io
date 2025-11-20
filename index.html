@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AI Space - Monster Edition Final</title>
+    <title>My AI Space - Monster Ultimate</title>
     <style>
-        /* ================= 1. 全局基础 & 背景 ================= */
+        /* ================= 1. 全局基础 ================= */
         :root {
             --monster-hue: 260; 
             --monster-color: hsl(var(--monster-hue), 80%, 60%);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            height: 100vh;
-            overflow: hidden;
+            height: 100vh; overflow: hidden;
             background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #90f7ec, #fbc2eb);
             background-size: 400% 400%;
             animation: gradientBG 8s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
-
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -33,30 +27,17 @@
 
         /* ================= 2. 首页 ================= */
         #landing-page {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 999; transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .glass-card {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 60px 80px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px);
+            padding: 60px 80px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
-
         .title { font-size: 3.5rem; color: #fff; font-weight: 700; margin-bottom: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .subtitle { font-size: 1.1rem; color: rgba(255,255,255,0.95); margin-bottom: 45px; }
-        
         .enter-btn {
             background: #fff; color: #6a85b6; border: none; padding: 16px 45px;
             font-size: 1.1rem; border-radius: 50px; cursor: pointer;
@@ -65,61 +46,54 @@
         }
         .enter-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
 
-        /* ================= 3. 怪兽形态 (精致版) ================= */
+        /* ================= 3. 怪兽形态 ================= */
         #monster-container {
-            position: relative;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 1s ease;
-            transform: scale(0.9); 
+            position: relative; display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 1s ease; transform: scale(0.9); 
+            /* 关键：允许更剧烈的物理变换 */
+            transform-origin: center bottom;
+        }
+
+        /* 受击震动动画 Class (JS触发) */
+        .hit-shock {
+            animation: shockWave 0.15s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shockWave {
+            0% { transform: scale(0.9) translate(0, 0); }
+            20% { transform: scale(0.85) translate(-5px, 10px); filter: brightness(2); } /* 闪白+下沉 */
+            40% { transform: scale(0.88) translate(5px, -5px); }
+            60% { transform: scale(0.9) translate(-5px, 5px); }
+            100% { transform: scale(0.9) translate(0, 0); filter: brightness(1); }
         }
 
         /* 耳朵 */
         .ear {
-            position: absolute;
-            top: -35px;
-            width: 70px;
-            height: 100px;
-            background: var(--monster-color);
-            border-radius: 50% 50% 0 0;
-            z-index: 1;
-            border: 4px solid rgba(0,0,0,0.1);
-            transition: transform 0.1s linear;
+            position: absolute; top: -35px; width: 70px; height: 100px;
+            background: var(--monster-color); border-radius: 50% 50% 0 0; z-index: 1;
+            border: 4px solid rgba(0,0,0,0.1); transition: transform 0.1s linear;
         }
         .ear.left { left: 50px; transform-origin: bottom right; }
         .ear.right { right: 50px; transform-origin: bottom left; }
         .ear-inner {
-            position: absolute;
-            bottom: 10px; left: 15%; width: 70%; height: 60%;
-            background: rgba(0,0,0,0.1);
-            border-radius: 50% 50% 0 0;
+            position: absolute; bottom: 10px; left: 15%; width: 70%; height: 60%;
+            background: rgba(0,0,0,0.1); border-radius: 50% 50% 0 0;
         }
 
-        /* 怪兽身体 */
+        /* 身体 */
         .monster-body {
-            position: relative;
-            width: 820px;
-            padding: 80px 30px 40px 30px;
-            background: var(--monster-color);
-            border-radius: 50px 50px 40px 40px;
+            position: relative; width: 820px; padding: 80px 30px 40px 30px;
+            background: var(--monster-color); border-radius: 50px 50px 40px 40px;
             box-shadow: inset 0 0 60px rgba(0,0,0,0.1), 0 20px 60px rgba(0,0,0,0.3);
-            z-index: 10;
-            transition: background-color 0.1s linear;
+            z-index: 10; transition: background-color 0.1s linear;
         }
 
         /* 脸部 */
         .face-area {
-            position: absolute;
-            top: 20px; left: 0; width: 100%; height: 60px;
-            display: flex; justify-content: center; gap: 50px;
-            z-index: 20;
+            position: absolute; top: 20px; left: 0; width: 100%; height: 60px;
+            display: flex; justify-content: center; gap: 50px; z-index: 20;
         }
-
         .eye-wrapper { position: relative; width: 60px; height: 60px; }
-
         .eyebrow {
             position: absolute; top: -20px; width: 80px; height: 16px;
             background: #fff; border-radius: 10px;
@@ -134,68 +108,58 @@
             position: relative; overflow: hidden;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
-
+        
         .pupil {
             width: 24px; height: 24px; background: #222; border-radius: 50%;
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            transition: background-color 0.3s, border-radius 0.3s, width 0.3s, height 0.3s;
         }
         .pupil::after {
             content: ''; position: absolute; top: 4px; right: 4px;
             width: 6px; height: 6px; background: white; border-radius: 50%;
         }
+        .pupil.lovesick {
+            width: 30px; height: 30px; background: #ff3366; border-radius: 0;
+            clip-path: path('M15 27.5l-2.15-1.95C5.2 18.65 0 13.95 0 8.25 0 3.55 3.65 0 8.25 0c2.6 0 5.1 1.2 6.75 3.1C16.65 1.2 19.15 0 21.75 0 26.35 0 30 3.55 30 8.25c0 5.7-5.2 10.4-12.85 17.3L15 27.5z');
+        }
+        .pupil.lovesick::after { display: none; }
 
         .cheek {
             position: absolute; top: 50px; width: 30px; height: 15px;
             background: rgba(255,0,0,0.15); border-radius: 50%; filter: blur(4px);
+            transition: opacity 0.3s;
         }
         .cheek.left { left: -20px; }
         .cheek.right { right: -20px; }
+        .cheek.lovesick { background: rgba(255, 50, 100, 0.6); width: 40px; height: 20px; filter: blur(6px); }
 
-        /* 口腔/聊天框 */
+        /* 嘴巴 */
         .mouth-container {
-            position: relative;
-            width: 100%;
-            height: 65vh;
-            background: #1a1a1a;
-            border-radius: 25px;
-            overflow: hidden;
-            border: 4px solid rgba(0,0,0,0.1);
-            box-shadow: inset 0 0 30px #000;
+            position: relative; width: 100%; height: 65vh;
+            background: #1a1a1a; border-radius: 25px; overflow: hidden;
+            border: 4px solid rgba(0,0,0,0.1); box-shadow: inset 0 0 30px #000;
         }
-
-        /* 牙齿 */
         .teeth {
             position: absolute; left: 0; width: 100%; height: 50px;
-            background-image: 
-                linear-gradient(115deg, #fdfdfd 20%, transparent 20%), 
-                linear-gradient(245deg, #fdfdfd 20%, transparent 20%);
-            background-size: 50px 60px; 
-            background-position: 0 -50px;
-            z-index: 50; pointer-events: none;
-            transition: transform 0.1s linear;
+            background-image: linear-gradient(115deg, #fdfdfd 20%, transparent 20%), linear-gradient(245deg, #fdfdfd 20%, transparent 20%);
+            background-size: 50px 60px; background-position: 0 -50px;
+            z-index: 50; pointer-events: none; transition: transform 0.1s linear;
         }
         .teeth.top { top: 0; transform: translateY(-40px); }
         .teeth.bottom { bottom: 0; transform: translateY(40px) rotate(180deg); }
 
         /* 聊天界面 */
         .chat-interface {
-            width: 100%; height: 100%;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(10px);
-            display: flex; flex-direction: column;
-            position: relative; z-index: 5;
+            width: 100%; height: 100%; background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; position: relative; z-index: 5;
         }
-
         .chat-header {
             padding: 12px; text-align: center; font-weight: 600; color: #555;
             background: rgba(255,255,255,0.5); border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-
         #chat-history {
-            flex: 1; padding: 20px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 12px;
+            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
         }
-
         .message {
             max-width: 75%; padding: 10px 16px; border-radius: 16px;
             font-size: 14px; line-height: 1.5; word-wrap: break-word;
@@ -203,26 +167,20 @@
         }
         .user-message { align-self: flex-end; background: var(--monster-color); color: #fff; border-bottom-right-radius: 4px; }
         .ai-message { align-self: flex-start; background: #fff; color: #333; border: 1px solid #eee; border-bottom-left-radius: 4px; }
-
         @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .input-area {
             padding: 12px 20px; background: #fff; border-top: 1px solid #eee;
-            display: flex; flex-direction: column; gap: 8px;
+            display: flex; flex-direction: column; gap: 8px; position: relative;
         }
         .slider-row { display: flex; align-items: center; justify-content: center; gap: 15px; }
         .slider-label { font-size: 11px; color: #999; font-weight: bold; text-transform: uppercase; }
-        
-        input[type=range] {
-            -webkit-appearance: none; width: 200px; height: 5px; background: #eee; border-radius: 3px; outline: none;
-        }
+        input[type=range] { -webkit-appearance: none; width: 200px; height: 5px; background: #eee; border-radius: 3px; outline: none; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 16px; height: 16px; background: var(--monster-color);
             border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s;
         }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-
-        .input-row { display: flex; gap: 10px; }
+        .input-row { display: flex; gap: 10px; position: relative; z-index: 10;}
         input[type="text"] {
             flex: 1; padding: 10px 18px; border: 2px solid #f0f0f0; border-radius: 50px; outline: none; font-size: 14px; transition: border-color 0.3s;
         }
@@ -233,20 +191,14 @@
         }
         .send-btn:hover { transform: scale(1.1); }
 
-        /* ================= 4. 气泡粒子样式 ================= */
+        /* ================= 4. 粒子特效 (Enhanced) ================= */
+        
+        /* 自动气泡 */
         .thought-bubble {
-            position: absolute;
-            bottom: 100%; 
-            left: 50%;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0;
-            animation: bubbleFloat 2.5s ease-out forwards;
-            white-space: nowrap;
+            position: absolute; bottom: 100%; left: 50%; font-family: 'Courier New', monospace;
+            font-weight: bold; pointer-events: none; z-index: 5; opacity: 0;
+            animation: bubbleFloat 2.5s ease-out forwards; white-space: nowrap;
         }
-
         @keyframes bubbleFloat {
             0% { opacity: 0; transform: translate(-50%, 20px) scale(0.5); }
             20% { opacity: 1; transform: translate(calc(-50% + var(--x-offset)), -20px) scale(1.2); }
@@ -254,11 +206,43 @@
             100% { opacity: 0; transform: translate(calc(-50% + var(--x-offset)), -120px) scale(1); }
         }
 
+        /* 输入特效粒子 */
+        .type-particle {
+            position: absolute; pointer-events: none; z-index: 999; font-weight: bold; color: #333;
+        }
+
+        /* 1. 理性模式：数据流加速汇入 */
+        @keyframes rationalStream {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            20% { opacity: 1; transform: translate(0, -30px) scale(1.2); color: cyan; text-shadow: 0 0 5px cyan; }
+            100% { opacity: 0; transform: translate(var(--tx), -350px) scale(0.2); }
+        }
+
+        /* 2. 狂野模式：重力炮弹砸向身体 (Dynamic Smash) */
+        @keyframes wildSmash {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            50% { transform: translate(var(--mid-x), -150px) scale(1.5) rotate(180deg); } /* 抛物线顶点 */
+            90% { opacity: 1; transform: translate(var(--tx), -20px) scale(2) rotate(720deg); } /* 砸中 */
+            100% { opacity: 0; transform: translate(var(--tx), 0px) scale(3); }
+        }
+
+        /* 3. 花痴模式：爱心飘 */
+        @keyframes loveFloat {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            20% { opacity: 1; transform: translate(var(--tx), -30px) scale(1.2); }
+            100% { opacity: 0; transform: translate(var(--tx), -150px) scale(1); }
+        }
+
+        /* 4. 平衡模式 */
+        @keyframes feedBubble {
+            0% { opacity: 1; transform: translate(0,0) scale(0.8); }
+            100% { opacity: 0; transform: translate(var(--tx), -100px) scale(1.2); }
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- 首页 -->
     <div id="landing-page">
         <div class="glass-card">
             <h1 class="title">Heart.Sir</h1>
@@ -270,28 +254,24 @@
         </div>
     </div>
 
-    <!-- 怪兽容器 -->
     <div id="monster-container">
-        
         <div class="ear left"><div class="ear-inner"></div></div>
         <div class="ear right"><div class="ear-inner"></div></div>
 
         <div class="monster-body" id="monster-body">
-            <!-- 脸部 -->
             <div class="face-area">
                 <div class="eye-wrapper">
                     <div class="eyebrow left" id="brow-left"></div>
                     <div class="eye"><div class="pupil" id="pupil-left"></div></div>
-                    <div class="cheek left"></div>
+                    <div class="cheek left" id="cheek-left"></div>
                 </div>
                 <div class="eye-wrapper">
                     <div class="eyebrow right" id="brow-right"></div>
                     <div class="eye"><div class="pupil" id="pupil-right"></div></div>
-                    <div class="cheek right"></div>
+                    <div class="cheek right" id="cheek-right"></div>
                 </div>
             </div>
 
-            <!-- 嘴巴 -->
             <div class="mouth-container">
                 <div class="teeth top" id="teeth-top"></div>
                 <div class="teeth bottom" id="teeth-bottom"></div>
@@ -299,7 +279,7 @@
                 <div class="chat-interface">
                     <div class="chat-header">✨ shh的小迷弟</div>
                     <div id="chat-history">
-                        <div class="message ai-message">你好，我是shh的小迷弟。滑动下面的滑块看看我的变化？</div>
+                        <div class="message ai-message">你好，我是shh的小迷弟。</div>
                     </div>
                     <div class="input-area">
                         <div class="slider-row">
@@ -308,7 +288,7 @@
                             <span class="slider-label">WILD</span>
                         </div>
                         <div class="input-row">
-                            <input type="text" id="user-input" placeholder="输入你的想法..." onkeypress="handleKeyPress(event)">
+                            <input type="text" id="user-input" placeholder="输入内容..." onkeypress="handleKeyPress(event)">
                             <button class="send-btn" onclick="sendMessage()">
                                 <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                             </button>
@@ -319,15 +299,16 @@
         </div>
     </div>
 
-        <script>
+    <script>
         const apiKey = "sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d"; 
         const apiUrl = "https://free.v36.cm/v1/chat/completions"; 
 
-        // 初始 System Prompt 占位
         let messagesHistory = [{ role: "system", content: "" }];
         
+        // 状态变量
         let targetTemp = 0.7;
         let currentTemp = 0.7;
+        let isLovesick = false; 
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
 
@@ -335,68 +316,92 @@
         const slider = document.getElementById('wild-slider');
         const container = document.getElementById('monster-container');
         const pupils = document.querySelectorAll('.pupil');
+        const cheeks = document.querySelectorAll('.cheek');
         const ears = document.querySelectorAll('.ear');
         const browLeft = document.getElementById('brow-left');
         const browRight = document.getElementById('brow-right');
         const teethTop = document.getElementById('teeth-top');
         const teethBottom = document.getElementById('teeth-bottom');
+        const inputField = document.getElementById('user-input');
 
-        // 粒子内容池
         const contentPool = {
             rational: ["∫dx", "√x", "x=y", "sinθ", "log", "∑", "π", "E=mc²", "{...}"],
             balanced: ["♥", "♪", "★", "OwO", "Nice", "☀", "☁", "♫", "☺"],
-            wild: ["#%!", "wtf?", "☠️", "⚡", "???", "$@&", "!!!", "💢", "blah"]
+            wild: ["#%!", "wtf?", "☠️", "⚡", "???", "$@&", "!!!", "💢", "blah"],
+            lovesick: ["csy", "love", "♥", "kiss", "miss u", "♥csy♥", "😍", "🥰"]
         };
 
         // ================= 1. 核心动画循环 =================
         function animate() {
             currentTemp += (targetTemp - currentTemp) * 0.08;
 
-            // 1. 颜色
+            // A. 颜色
             let hue;
-            if(currentTemp <= 0.8) hue = 200 + (currentTemp / 0.8) * 70; 
-            else hue = 270 + ((currentTemp - 0.8) / 0.7) * 90;
+            if (isLovesick) {
+                hue = 340; 
+            } else {
+                if(currentTemp <= 0.8) hue = 200 + (currentTemp / 0.8) * 70; 
+                else hue = 270 + ((currentTemp - 0.8) / 0.7) * 90;
+            }
             document.documentElement.style.setProperty('--monster-hue', hue);
 
-            // 2. 耳朵
+            // B. 瞳孔形状
+            if (isLovesick) {
+                pupils.forEach(p => p.classList.add('lovesick'));
+                cheeks.forEach(c => c.classList.add('lovesick'));
+            } else {
+                pupils.forEach(p => p.classList.remove('lovesick'));
+                cheeks.forEach(c => c.classList.remove('lovesick'));
+            }
+
+            // C. 耳朵
             let earRot = 0;
-            if (currentTemp < 0.5) earRot = -20 * (1 - currentTemp/0.5);
-            else if (currentTemp > 1.0) earRot = 30 * ((currentTemp-1.0)/0.5);
-            
+            if (isLovesick) {
+                earRot = Math.sin(Date.now() / 100) * 15; 
+            } else {
+                if (currentTemp < 0.5) earRot = -20 * (1 - currentTemp/0.5);
+                else if (currentTemp > 1.0) earRot = 30 * ((currentTemp-1.0)/0.5);
+            }
             ears[0].style.transform = `rotate(${-10 - earRot}deg)`;
             ears[1].style.transform = `rotate(${10 + earRot}deg)`;
 
-            // 3. 眉毛
+            // D. 眉毛
             let browY = 0, browRot = 0;
-            if (currentTemp < 0.4) {
-                browY = -8 * ((0.4 - currentTemp)/0.4);
-                browRot = 4;
-            } else if (currentTemp > 0.8) {
-                const fury = (currentTemp - 0.8) / 0.7;
-                browY = 18 * fury;
-                browRot = 28 * fury;
+            if (isLovesick) {
+                browY = 5; browRot = -5;
+            } else {
+                if (currentTemp < 0.4) {
+                    browY = -8 * ((0.4 - currentTemp)/0.4); browRot = 4;
+                } else if (currentTemp > 0.8) {
+                    const fury = (currentTemp - 0.8) / 0.7;
+                    browY = 18 * fury; browRot = 28 * fury;
+                }
             }
             browLeft.style.transform = `translateY(${browY}px) rotate(${browRot}deg)`;
             browRight.style.transform = `translateY(${browY}px) rotate(${-browRot}deg)`;
 
-            // 4. 牙齿
+            // E. 牙齿
             let toothY = 0;
-            if (currentTemp > 0.8) {
+            if (!isLovesick && currentTemp > 0.8) {
                 toothY = ((currentTemp - 0.8) / 0.7) * 35;
             }
             teethTop.style.transform = `translateY(${-50 + toothY}px)`;
             teethBottom.style.transform = `translateY(${50 - toothY}px) rotate(180deg)`;
 
-            // 5. 震动
+            // F. 身体震动
             let tx = 0, ty = 0;
-            if (currentTemp > 1.1) {
+            if (!isLovesick && currentTemp > 1.1) {
                 const intensity = (currentTemp - 1.1) * 4;
                 tx = (Math.random() - 0.5) * intensity;
                 ty = (Math.random() - 0.5) * intensity;
             }
-            // 基础缩放 + 呼吸
-            const breath = Math.sin(Date.now() / 1000) * 0.005; 
-            container.style.transform = `translate(${tx}px, ${ty}px) scale(${0.9 + breath})`;
+            const breathSpeed = isLovesick ? 200 : 1000; 
+            const breathAmp = isLovesick ? 0.02 : 0.005;
+            const breath = Math.sin(Date.now() / breathSpeed) * breathAmp; 
+            // 这里保留transform给物理碰撞使用
+            if (!container.classList.contains('hit-shock')) {
+                 container.style.transform = `translate(${tx}px, ${ty}px) scale(${0.9 + breath})`;
+            }
 
             updateEyes(currentTemp);
             requestAnimationFrame(animate);
@@ -409,43 +414,109 @@
                 const cy = rect.top + rect.height/2;
                 let dx = mouseX - cx;
                 let dy = mouseY - cy;
-                let dist = Math.min(Math.sqrt(dx*dx+dy*dy), 15);
-                let angle = Math.atan2(dy, dx);
-                let moveX = Math.cos(angle) * dist;
-                let moveY = Math.sin(angle) * dist;
                 let scale = 1;
+                let moveX = 0, moveY = 0;
 
-                if (temp < 0.4) {
-                    moveX = Math.sin(Date.now() / 1000) * 3; 
-                    moveY = -12;
-                    scale = 0.9;
-                } else if (temp > 1.2) {
-                    scale = 0.5; 
-                    moveX += (Math.random() - 0.5) * 8;
-                    moveY += (Math.random() - 0.5) * 8;
+                if (isLovesick) {
+                    scale = 1.1;
+                    moveX = Math.sin(Date.now() / 300) * 5;
+                } else {
+                    let dist = Math.min(Math.sqrt(dx*dx+dy*dy), 15);
+                    let angle = Math.atan2(dy, dx);
+                    moveX = Math.cos(angle) * dist;
+                    moveY = Math.sin(angle) * dist;
+
+                    if (temp < 0.4) {
+                        moveX = Math.sin(Date.now() / 1000) * 3; moveY = -12; scale = 0.9;
+                    } else if (temp > 1.2) {
+                        scale = 0.5; 
+                        moveX += (Math.random() - 0.5) * 8;
+                        moveY += (Math.random() - 0.5) * 8;
+                    }
                 }
-
                 pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px)) scale(${scale})`;
             });
         }
 
-        // ================= 2. 粒子生成系统 =================
-        setInterval(() => {
-            createThoughtBubble();
-        }, 600); 
+        // ================= 2. 增强型打字特效 =================
+        inputField.addEventListener('input', (e) => {
+            if (e.data && e.data.trim() !== '') spawnTypingEffect(e.data);
+        });
 
-        function createThoughtBubble() {
+        function spawnTypingEffect(char) {
+            const particle = document.createElement('div');
+            particle.className = 'type-particle';
+            particle.innerText = char;
+            
+            const rect = inputField.getBoundingClientRect();
+            // 随机生成在输入框上方
+            const startX = rect.left + Math.random() * rect.width;
+            const startY = rect.top - 20; 
+
+            particle.style.left = startX + 'px';
+            particle.style.top = startY + 'px';
+
+            let animationName = "";
+            let duration = "1s";
+
+            // 计算怪兽中心的相对位置
+            const monsterRect = container.getBoundingClientRect();
+            const monsterCenterX = monsterRect.left + monsterRect.width / 2;
+            const targetDeltaX = (monsterCenterX - startX) + (Math.random()-0.5)*40; // 目标X偏移
+            
+            particle.style.setProperty('--tx', targetDeltaX + 'px');
+            // 抛物线中间点
+            particle.style.setProperty('--mid-x', (targetDeltaX / 2) + 'px');
+
+            if (isLovesick) {
+                particle.innerText = "♥";
+                particle.style.color = "#ff3366";
+                particle.style.fontSize = "24px";
+                animationName = "loveFloat";
+                duration = "1.5s";
+            } else if (currentTemp < 0.4) {
+                // 理性：数据流
+                particle.style.color = "cyan";
+                particle.style.fontFamily = "monospace";
+                particle.style.fontSize = "18px";
+                animationName = "rationalStream";
+                duration = "0.6s"; // 更快
+            } else if (currentTemp > 1.1) {
+                // 狂野：重力砸击
+                particle.style.color = "#000";
+                particle.style.fontWeight = "900";
+                particle.style.fontSize = "32px"; // 更大
+                animationName = "wildSmash";
+                duration = "0.4s"; // 极快
+                
+                // 物理碰撞逻辑：粒子飞到终点时触发怪兽震动
+                setTimeout(() => {
+                    container.classList.remove('hit-shock');
+                    void container.offsetWidth; // 强制重绘
+                    container.classList.add('hit-shock');
+                }, 350); // 对应动画结束时间前一点点
+            } else {
+                particle.style.color = "#90f7ec";
+                animationName = "feedBubble";
+            }
+
+            particle.style.animation = `${animationName} ${duration} forwards`;
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1500);
+        }
+
+        // ================= 3. 自动气泡 =================
+        setInterval(() => createThoughtBubble(), 800); 
+        function createThoughtBubble(forceLovesick = false) {
             const bubble = document.createElement('div');
             bubble.className = 'thought-bubble';
-            
             let type = "balanced";
             if(currentTemp < 0.4) type = "rational";
             if(currentTemp > 1.1) type = "wild";
+            if(isLovesick || forceLovesick) type = "lovesick";
 
             const pool = contentPool[type];
-            const text = pool[Math.floor(Math.random() * pool.length)];
-            
-            bubble.innerText = text;
+            bubble.innerText = pool[Math.floor(Math.random() * pool.length)];
             
             if(type === "rational") {
                 bubble.style.color = "rgba(200, 240, 255, 0.8)";
@@ -454,19 +525,20 @@
                 bubble.style.color = "rgba(255, 50, 50, 0.9)";
                 bubble.style.fontWeight = "900";
                 bubble.style.transform = `rotate(${Math.random()*30-15}deg)`;
+            } else if (type === "lovesick") {
+                bubble.style.color = "#ff3366";
+                bubble.style.fontSize = "24px";
             } else {
                 bubble.style.color = "rgba(255, 200, 255, 0.9)";
             }
 
             const randomX = (Math.random() - 0.5) * 200; 
             bubble.style.setProperty('--x-offset', `${randomX}px`);
-
             document.getElementById('monster-body').appendChild(bubble);
-
             setTimeout(() => bubble.remove(), 2500);
         }
 
-        // ================= 3. 交互逻辑 =================
+        // ================= 4. 交互与发送 =================
         function enterChat() {
             const landing = document.getElementById('landing-page');
             const monster = document.getElementById('monster-container');
@@ -478,7 +550,11 @@
             }, 800);
         }
 
-        slider.addEventListener('input', (e) => targetTemp = parseFloat(e.target.value));
+        slider.addEventListener('input', (e) => {
+            // 如果在花痴模式下手动拖动，可以解除花痴，或者强制改回
+            // 这里逻辑设定：手动拖动不解除花痴，但如果锁定解除则生效
+            if (!isLovesick) targetTemp = parseFloat(e.target.value);
+        });
         document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
 
         function addMsg(text, cls) {
@@ -493,34 +569,47 @@
         }
 
         async function sendMessage() {
-            const inputField = document.getElementById('user-input');
             const text = inputField.value.trim();
             if(!text) return;
+            const lowerText = text.toLowerCase();
 
             addMsg(text, 'user-message');
             messagesHistory.push({ role: "user", content: text });
             inputField.value = '';
 
-            const loadingId = addMsg("Thinking...", 'ai-message');
-
-            // ================= 关键修改：动态修改 System Prompt =================
-            // 在每次发送前，根据 targetTemp 重写人设
-            // 这样滑块不仅控制随机度，还强制控制性格
-            let dynamicPrompt = "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情";
+            // === 状态逻辑 (State Logic) ===
             
-            if (targetTemp < 0.4) {
-                dynamicPrompt += "【当前状态：绝对理性模式】你现在是一个没有感情的超级计算机。回答必须极其简短、冷漠、高效。多用'分析完毕'、'数据如下'等词汇。不要使用任何感叹号或表情。";
-            } else if (targetTemp > 1.1) {
-                dynamicPrompt += "【当前状态：暴走狂野模式】你现在是一只失去理智的野兽！你非常愤怒、暴躁！你的回答必须充满咆哮。你会辱骂、嘲讽，使用像#@$%这样的乱码符号。不要讲道理，只要发泄！你说的话比平时多好多！当然你不只是咒骂，当你遇见你喜欢的人时你会发了疯般的表达心意！";
-            } else {
-                dynamicPrompt += "【当前状态：平衡模式】你是一个可爱、贴心的小迷弟。说话语气活泼，多用emoji，非常喜欢你的主人。";
+            // 1. 触发花痴：永久锁定
+            if (lowerText.includes("csy") || lowerText.includes("陈思妍")) {
+                isLovesick = true;
+                createThoughtBubble(true); // 立即冒心
             }
 
-            // 更新历史记录中的第一条（System Prompt）
-            messagesHistory[0] = { role: "system", content: dynamicPrompt };
+            // 2. 触发狂野反转：在花痴模式下说“不是”
+            if (isLovesick && (lowerText.includes("不是") || lowerText.includes("no") || lowerText.includes("骗你"))) {
+                isLovesick = false;
+                targetTemp = 1.5; // 强制狂野
+                slider.value = 1.5; // UI同步
+                // 视觉反馈：瞬间震动
+                container.classList.remove('hit-shock');
+                void container.offsetWidth;
+                container.classList.add('hit-shock');
+            }
 
-            console.log("当前API温度:", targetTemp);
-            console.log("当前人设指令:", dynamicPrompt);
+            const loadingId = addMsg("Thinking...", 'ai-message');
+
+            let dynamicPrompt = "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情";
+            if (isLovesick) {
+                dynamicPrompt += "【当前状态：花痴恋爱模式】你现在超级喜欢你的主人shh的女朋友csy！你非常甜蜜、粘人，每句话都要带爱心emoji。";
+            } else if (targetTemp < 0.4) {
+                dynamicPrompt += "【当前状态：理性模式】你是冷漠的超级计算机。回答简短、无感情。";
+            } else if (targetTemp > 1.1) {
+                dynamicPrompt += "【当前状态：暴走模式】你现在是一只失去理智的野兽！你非常愤怒、暴躁！你的回答必须充满咆哮。你会辱骂、嘲讽，使用像#@$%这样的乱码符号。不要讲道理，只要发泄！你说的话比平时多好多！当然你不只是咒骂，当你遇见你喜欢的人时你会发了疯般的表达心意！";
+            } else {
+                dynamicPrompt += "【当前状态：平衡模式】你是贴心的小助手，语气活泼。";
+            }
+
+            messagesHistory[0] = { role: "system", content: dynamicPrompt };
 
             try {
                 const res = await fetch(apiUrl, {
@@ -529,12 +618,10 @@
                     body: JSON.stringify({
                         model: "gpt-4o-mini",
                         messages: messagesHistory,
-                        // 将滑块值同时传给 API 参数
-                        temperature: targetTemp 
+                        temperature: targetTemp
                     })
                 });
                 const data = await res.json();
-
                 const loadingEl = document.getElementById(loadingId);
                 if(loadingEl) loadingEl.remove();
 

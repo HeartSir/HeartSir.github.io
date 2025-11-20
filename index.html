@@ -3,270 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeChat AI</title>
+    <title>My AI Space</title>
     <style>
-        /* --- 1. 微信风格样式部分 --- */
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f5f5f5;
+/* === 滑块样式 === */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px; /* 和输入框拉开一点距离 */
+    padding: 0 10px;
+}
+
+/* 滑块轨道 */
+input[type=range] {
+    -webkit-appearance: none; /* 去掉默认样式 */
+    width: 100%;
+    background: rgba(255, 255, 255, 0.5); /* 半透明轨道 */
+    height: 6px;
+    border-radius: 5px;
+    outline: none;
+}
+
+/* 滑块上的圆钮 */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    background: #8ec5fc; /* 蓝色圆钮 */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.2); /* 鼠标放上去变大 */
+    background: #e0c3fc; /* 变紫色 */
+}
+
+        /* === 1. 全局基础设置 === */
+        :root {
+            --primary-color: #6a85b6;
+            --bg-gradient: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
         }
 
-        /* 模拟手机屏幕容器 */
-        .app-container {
-            max-width: 600px; /* 限制最大宽度像个手机 */
-            height: 100%;
-            margin: 0 auto;
-            background-color: #f5f5f5;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* === 修改后的 CSS === */
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    
+    /* 1. 定义更多颜色的渐变，让流动更明显 */
+    background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #90f7ec, #fbc2eb);
+    
+    /* 2. 把背景拉大，这样才能“移动”它 */
+    background-size: 400% 400%;
+    
+    /* 3. 添加长时间的循环动画 */
+    animation: gradientBG 8s ease infinite;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* === 这是新加的关键帧动画 === */
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+        /* === 2. 首页 (Landing Page) 样式 === */
+        #landing-page {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        /* 顶部标题栏 */
-        .header {
-            background-color: #ededed;
-            height: 50px;
-            display: flex;
+            justify-content: center;
             align-items: center;
-            justify-content: center; /* 标题居中 */
-            border-bottom: 1px solid #dcdcdc;
-            flex-shrink: 0; 
-            z-index: 100;
-            position: relative;
-        }
-        .header h1 {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 0;
+            z-index: 999;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 聊天记录滚动区 */
-        .chat-area {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background-color: #f5f5f5;
+        /* 玻璃磨砂卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 60px 80px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            max-width: 90%;
         }
 
-        /* 消息气泡通用样式 */
-        .message {
-            display: flex;
-            align-items: flex-start;
+        .title {
+            font-size: 3.5rem;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 4px;
             margin-bottom: 15px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 4px;
-            background-color: #ddd;
-            margin-right: 10px;
-            background-size: cover;
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 45px;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
-        /* 气泡本体 */
-        .bubble {
+
+        /* 交互按钮 */
+        .enter-btn {
+            background: #fff;
+            color: var(--primary-color);
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            padding-right: 35px;
+        }
+
+        .enter-btn svg { transition: transform 0.3s ease; }
+        .enter-btn:hover svg { transform: translateX(5px); }
+
+        /* 背景光球动画 */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            opacity: 0.7;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { top: 5%; left: 15%; width: 350px; height: 350px; background: #ff9a9e; }
+        .blob-2 { bottom: 10%; right: 15%; width: 400px; height: 400px; background: #a18cd1; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 60px); }
+        }
+
+        /* === 3. 聊天主界面 (Chat Interface) 样式 === */
+        #main-interface {
+            width: 100%; height: 100%;
+            display: none; /* 默认隐藏 */
+            opacity: 0;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-container {
+            width: 900px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.9); /* 聊天框稍微不透明一点，便于阅读 */
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            text-align: center;
+            font-weight: 600;
+            color: #555;
+            background: rgba(255,255,255,0.5);
+        }
+
+        #chat-history {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 消息气泡 */
+        .message {
             max-width: 70%;
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 15px;
+            padding: 14px 20px;
+            border-radius: 18px;
+            font-size: 0.95rem;
             line-height: 1.5;
             position: relative;
             word-wrap: break-word;
+            animation: popIn 0.3s ease forwards;
+        }
+        
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 对方（AI）的样式 */
-        .message.ai .avatar {
-            background-image: url('https://cdn-icons-png.flaticon.com/512/4712/4712027.png'); /* 机器人头像 */
-        }
-        .message.ai .bubble {
-            background-color: #ffffff;
-            border: 1px solid #ededed;
-        }
-        .message.ai .bubble::before {
-            content: "";
-            position: absolute;
-            left: -6px; top: 14px;
-            border-top: 6px solid transparent;
-            border-bottom: 6px solid transparent;
-            border-right: 6px solid #ffffff;
+        .user-message {
+            align-self: flex-end;
+            background: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(106, 133, 182, 0.3);
         }
 
-        /* 我（用户）的样式 */
-        .message.me {
-            flex-direction: row-reverse; /* 反向排列 */
-        }
-        .message.me .avatar {
-            margin-right: 0;
-            margin-left: 10px;
-            background-image: url('https://cdn-icons-png.flaticon.com/512/924/924874.png'); /* 用户头像 */
-        }
-        .message.me .bubble {
-            background-color: #95ec69; /* 微信绿 */
-            color: #000;
-        }
-        .message.me .bubble::before {
-            content: "";
-            position: absolute;
-            right: -6px; top: 14px;
-            border-top: 6px solid transparent;
-            border-bottom: 6px solid transparent;
-            border-left: 6px solid #95ec69;
+        .ai-message {
+            align-self: flex-start;
+            background: #fff;
+            color: #333;
+            border: 1px solid #efefef;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        /* 底部输入栏 */
         .input-area {
-            background-color: #f7f7f7;
-            padding: 10px;
-            border-top: 1px solid #dcdcdc;
+            padding: 20px;
+            background: #fff;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid #eee;
+            border-radius: 50px;
+            outline: none;
+            font-size: 1rem;
+            transition: border 0.3s;
+            background: #f9f9f9;
+        }
+        input[type="text"]:focus { border-color: var(--primary-color); background: #fff; }
+
+        .send-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            flex-shrink: 0;
+            justify-content: center;
+            transition: transform 0.2s;
         }
-        .input-field {
-            flex-grow: 1;
-            border: none;
-            border-radius: 4px;
-            padding: 10px;
-            font-size: 16px;
-            background: white;
-            outline: none;
-            margin-right: 10px;
-        }
-        .send-btn {
-            background-color: #95ec69;
-            color: black;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-        .send-btn:hover { background-color: #85da60; }
-        .send-btn:disabled { background-color: #ddd; color: #999; cursor: not-allowed; }
+        .send-btn:hover { transform: scale(1.1); }
 
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <!-- 顶部 -->
-    <div class="header">
-        <h1>微信 (ChatGPT版)</h1>
-    </div>
-
-    <!-- 聊天内容区 -->
-    <div class="chat-area" id="chatBox">
-        <!-- 默认的一条消息 -->
-        <div class="message ai">
-            <div class="avatar"></div>
-            <div class="bubble">你好！我是AI助手，直接发消息跟我聊天吧。</div>
+    <!-- 1. 首页 (Landing Page) -->
+    <div id="landing-page">
+        <div class="glass-card">
+            <h1 class="title">Heart.Sir</h1>
+            <p class="subtitle">这里是shh的第一个网站</p>
+            
+            <button class="enter-btn" onclick="enterChat()">
+                <span>开始交流</span>
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
         </div>
+        <!-- 装饰背景球 -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
     </div>
 
-    <!-- 输入区 -->
-    <div class="input-area">
-        <input type="text" class="input-field" id="userInput" placeholder="发消息..." onkeydown="if(event.keyCode==13) sendMessage()">
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">发送</button>
+    <!-- 2. 聊天主界面 (Chat Interface) -->
+    <div id="main-interface">
+        <div class="chat-container">
+            <div class="chat-header">✨ shh的小迷弟</div>
+            
+            <div id="chat-history">
+                <!-- 消息会显示在这里 -->
+                <div class="message ai-message">你好，我是shh的小迷弟。有什么想聊的吗？</div>
+            </div>
+
+                        <div class="input-area" style="flex-direction: column; gap: 10px;">
+                <!-- 第一行：滑块 -->
+                <div class="slider-container" style="width: 100%; justify-content: center;">
+                    <span style="color: #666; font-size: 12px;">理性</span>
+                    <input type="range" id="wild-slider" min="0" max="1.5" step="0.1" value="0.7" style="flex:1; max-width: 200px; margin: 0 10px;">
+                    <span style="color: #666; font-size: 12px;">狂野</span>
+                </div>
+
+                <!-- 第二行：输入框和按钮 -->
+                <div style="display: flex; width: 100%; gap: 10px;">
+                    <input type="text" id="user-input" placeholder="输入你的想法..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+
     </div>
-</div>
 
-<script>
-    /* --- 2. 逻辑脚本部分 --- */
-    
-    // 聊天上下文，保持对话记忆
-    let messagesHistory = [
-        { role: "system", content: "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情" }
-    ];
-
-    // 辅助函数：在界面上添加消息
-    function appendMessage(role, text) {
-        const chatBox = document.getElementById('chatBox');
+    <script>
+        // ================= 配置区域 =================
+        // 请在这里填入你的 API Key 和 接口地址
+        const apiKey = "sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d"; 
+        const apiUrl = "https://free.v36.cm/v1/chat/completions"; 
         
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${role === 'user' ? 'me' : 'ai'}`;
+        // ================= 设置 AI 人设 (Few-Shot Learning) =================
+        let messagesHistory = [
+            { 
+                role: "system", 
+                content: "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情" 
+            },
+            // --- 预置示例对话 (让 AI 学习风格) ---
+            { role: "user", content: "我好累啊" },
+            { role: "assistant", content: "累了就躺平呗，地球离了你又不是不转了。今晚打游戏不？" },
+            { role: "user", content: "帮我写个工作周报" },
+            { role: "assistant", content: "又来？行吧行吧，发我重点，我帮你编...啊不是，帮你润色。" }
+        ];
+
+        // ================= 交互逻辑 =================
         
-        const avatarStr = `<div class="avatar"></div>`;
-        const bubbleStr = `<div class="bubble">${text}</div>`;
-        
-        msgDiv.innerHTML = role === 'user' ? (bubbleStr + avatarStr) : (avatarStr + bubbleStr);
-        
-        chatBox.appendChild(msgDiv);
-        // 滚动到底部
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+        // 1. 切换页面动画：首页 -> 聊天页
+        function enterChat() {
+            const landingPage = document.getElementById('landing-page');
+            const mainInterface = document.getElementById('main-interface');
 
-    // 发送消息的主函数
-    async function sendMessage() {
-        const input = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const text = input.value.trim();
+            landingPage.style.opacity = '0'; // 首页淡出
 
-        const apiKey = 'sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d'; 
-        const apiUrl = 'https://free.v36.cm/v1/chat/completions';
-        const modelName = "gpt-4o-mini"; 
-        if (!text) return;
-
-        // 1. 显示用户的消息
-        appendMessage('user', text);
-        input.value = '';
-        
-        // 2. 锁定发送按钮
-        sendBtn.disabled = true;
-        sendBtn.textContent = "对方正在输入...";
-        
-        // 更新历史记录
-        messagesHistory.push({ role: "user", content: text });
-
-        try {
-            // 3. 请求 API
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // 这里引用上面定义的 apiKey 变量，语法更安全
-                    'Authorization': 'Bearer sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d'                },
-                body: JSON.stringify({
-                    model: modelName, // 引用上面定义的 modelName
-                    messages: messagesHistory,
-                    temperature:1.0
-                })
-            });
-
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error?.message || "网络请求失败，请检查接口地址");
-            }
-
-            const data = await response.json();
-            // 防止接口返回格式不标准，做个兼容检查
-            if (!data.choices || data.choices.length === 0) {
-               throw new Error("API返回数据异常");
-            }
-            
-            const aiReply = data.choices[0].message.content;
-
-            // 4. 显示 AI 的回复
-            appendMessage('assistant', aiReply);
-            
-            // 存入历史
-            messagesHistory.push({ role: "assistant", content: aiReply });
-
-        } catch (error) {
-            console.error(error);
-            appendMessage('assistant', `[出错啦] ${error.message}`);
-        } finally {
-            // 5. 恢复按钮状态
-            sendBtn.disabled = false;
-            sendBtn.textContent = "发送";
-            // 重新聚焦输入框，方便继续打字
-            input.focus(); 
+            setTimeout(() => {
+                landingPage.style.display = 'none'; // 移除首页
+                mainInterface.style.display = 'flex'; // 准备显示聊天页
+                
+                // 延迟一小会触发淡入
+                setTimeout(() => {
+                    mainInterface.style.opacity = '1';
+                }, 50);
+            }, 800);
         }
-    }
-</script>
 
+                // 2. 发送消息功能（升级版：带错误诊断）
+                async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const chatHistory = document.getElementById('chat-history');
+            const slider = document.getElementById('wild-slider'); // 获取滑块元素
+            const userText = inputField.value.trim();
+
+            if (!userText) return;
+
+            // UI: 显示用户消息
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user-message';
+            userDiv.textContent = userText;
+            chatHistory.appendChild(userDiv);
+            
+            inputField.value = ''; 
+            chatHistory.scrollTop = chatHistory.scrollHeight; 
+
+            // 数据: 加入历史记录
+            messagesHistory.push({ role: "user", content: userText });
+
+            // UI: 显示 Loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai-message';
+            loadingDiv.textContent = "Thinking...";
+            loadingDiv.id = "loading-msg";
+            chatHistory.appendChild(loadingDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            try {
+                // 获取当前的温度值（注意这里修正了逗号为点号）
+                const currentTemp = parseFloat(slider.value);
+                console.log("当前狂野程度(Temperature):", currentTemp);
+
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o-mini",
+                        messages: messagesHistory,
+                        stream: false,
+                        temperature: currentTemp // ✅ 这里是修复后的关键点
+                    })
+                });
+
+                const data = await response.json();
+                
+                // 移除 loading
+                if(loadingDiv.parentNode) chatHistory.removeChild(loadingDiv);
+
+                if (!response.ok) {
+                    const errorMsg = data.error ? data.error.message : "未知错误";
+                    alert(`API 报错: ${errorMsg}`);
+                    return;
+                }
+
+                if (data.choices && data.choices.length > 0) {
+                    const aiText = data.choices[0].message.content;
+                    const aiDiv = document.createElement('div');
+                    aiDiv.className = 'message ai-message';
+                    aiDiv.textContent = aiText;
+                    chatHistory.appendChild(aiDiv);
+                    messagesHistory.push({ role: "assistant", content: aiText });
+                } 
+
+            } catch (error) {
+                if(loadingDiv.parentNode) loadingDiv.textContent = "Error";
+                console.error("请求失败:", error);
+                alert("网络发送失败，请按F12查看控制台。");
+            }
+
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+
+        // 3. 回车发送
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
 </body>
 </html>

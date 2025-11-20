@@ -325,6 +325,8 @@
         const apiKey = "sk-CU5LyD3BviGoBIUM1b4aD3F5FfFf49BeAd2f47779fA9853d"; 
         const apiUrl = "https://free.v36.cm/v1/chat/completions"; 
 
+        let currentUserName = prompt("请输入你的名字：") || "匿名用户";
+
         let messagesHistory = [{ role: "system", content: "" }];
         let targetTemp = 0.7;
         let currentTemp = 0.7;
@@ -525,6 +527,18 @@
             return div.id;
         }
 
+// 【新增】发送数据给后端保存
+function saveToDatabase(role, content) {
+    fetch('http://localhost:3000/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: currentUserName,
+            role: role,
+            message: content
+        })
+    }).catch(err => console.error("保存失败:", err));
+}
         async function sendMessage() {
             const text = inputField.value.trim();
             if(!text) return;
@@ -532,6 +546,7 @@
 
             addMsg(text, 'user-message');
             messagesHistory.push({ role: "user", content: text });
+            saveToDatabase('user',text)
             inputField.value = '';
 
             if (lowerText.includes("csy") || lowerText.includes("陈思妍")) {
@@ -568,6 +583,7 @@
                     const aiText = data.choices[0].message.content;
                     addMsg(aiText, 'ai-message');
                     messagesHistory.push({ role: "assistant", content: aiText });
+                    saveToDatabase('ai',aiText)
                 }
             } catch(e) {
                 const loadingEl = document.getElementById(loadingId);

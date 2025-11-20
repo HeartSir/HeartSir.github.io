@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AI Space - Monster Ultimate</title>
+    <!-- 关键：禁止缩放，确保移动端比例正确 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My AI Space - Mobile Adapted</title>
     <style>
         /* ================= 1. 全局基础 ================= */
         :root {
@@ -11,13 +12,19 @@
             --monster-color: hsl(var(--monster-hue), 80%, 60%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            height: 100vh; overflow: hidden;
+            /* 使用 dvh (Dynamic Viewport Height) 解决手机浏览器地址栏遮挡问题 */
+            height: 100dvh; 
+            width: 100vw;
+            overflow: hidden;
             background: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #90f7ec, #fbc2eb);
             background-size: 400% 400%;
             animation: gradientBG 8s ease infinite;
             display: flex; justify-content: center; align-items: center;
+            /* 防止手机下拉刷新干扰 */
+            overscroll-behavior: none; 
         }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -35,6 +42,7 @@
             background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px);
             padding: 60px 80px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.3);
             text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 90%; /* 手机适配 */
         }
         .title { font-size: 3.5rem; color: #fff; font-weight: 700; margin-bottom: 15px; text-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .subtitle { font-size: 1.1rem; color: rgba(255,255,255,0.95); margin-bottom: 45px; }
@@ -44,34 +52,29 @@
             display: inline-flex; align-items: center; gap: 10px;
             transition: all 0.3s ease; font-weight: 600;
         }
-        .enter-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
 
-        /* ================= 3. 怪兽形态 ================= */
+        /* ================= 3. 怪兽形态 (响应式改造) ================= */
         #monster-container {
             position: relative; display: none; flex-direction: column;
             align-items: center; justify-content: center;
             opacity: 0; transition: opacity 1s ease; transform: scale(0.9); 
-            /* 关键：允许更剧烈的物理变换 */
             transform-origin: center bottom;
+            width: 100%; /* 容器占满 */
         }
 
-        /* 受击震动动画 Class (JS触发) */
-        .hit-shock {
-            animation: shockWave 0.15s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        /* 受击震动 */
+        .hit-shock { animation: shockWave 0.15s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shockWave {
             0% { transform: scale(0.9) translate(0, 0); }
-            20% { transform: scale(0.85) translate(-5px, 10px); filter: brightness(2); } /* 闪白+下沉 */
-            40% { transform: scale(0.88) translate(5px, -5px); }
-            60% { transform: scale(0.9) translate(-5px, 5px); }
+            20% { transform: scale(0.85) translate(-5px, 10px); filter: brightness(2); }
             100% { transform: scale(0.9) translate(0, 0); filter: brightness(1); }
         }
 
         /* 耳朵 */
         .ear {
-            position: absolute; top: -35px; width: 70px; height: 100px;
+            position: absolute; top: -35px; width: 60px; height: 90px;
             background: var(--monster-color); border-radius: 50% 50% 0 0; z-index: 1;
-            border: 4px solid rgba(0,0,0,0.1); transition: transform 0.1s linear;
+            border: 4px solid rgba(0,0,0,0.1); transition: transform 0.1s linear, left 0.3s, right 0.3s;
         }
         .ear.left { left: 50px; transform-origin: bottom right; }
         .ear.right { right: 50px; transform-origin: bottom left; }
@@ -80,10 +83,13 @@
             background: rgba(0,0,0,0.1); border-radius: 50% 50% 0 0;
         }
 
-        /* 身体 */
+        /* 身体 - 核心适配点 */
         .monster-body {
-            position: relative; width: 820px; padding: 80px 30px 40px 30px;
-            background: var(--monster-color); border-radius: 50px 50px 40px 40px;
+            position: relative; 
+            width: 92vw; /* 手机上占屏幕宽度的92% */
+            max-width: 820px; /* 电脑上最大820px */
+            padding: 80px 20px 30px 20px;
+            background: var(--monster-color); border-radius: 40px 40px 30px 30px;
             box-shadow: inset 0 0 60px rgba(0,0,0,0.1), 0 20px 60px rgba(0,0,0,0.3);
             z-index: 10; transition: background-color 0.1s linear;
         }
@@ -91,17 +97,19 @@
         /* 脸部 */
         .face-area {
             position: absolute; top: 20px; left: 0; width: 100%; height: 60px;
-            display: flex; justify-content: center; gap: 50px; z-index: 20;
+            display: flex; justify-content: center; 
+            gap: 40px; /* 默认间距 */
+            z-index: 20; transition: gap 0.3s;
         }
         .eye-wrapper { position: relative; width: 60px; height: 60px; }
         .eyebrow {
-            position: absolute; top: -20px; width: 80px; height: 16px;
+            position: absolute; top: -20px; width: 70px; height: 14px;
             background: #fff; border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             transition: transform 0.1s linear; z-index: 22;
         }
-        .eyebrow.left { left: -10px; }
-        .eyebrow.right { right: -10px; }
+        .eyebrow.left { left: -5px; }
+        .eyebrow.right { right: -5px; }
 
         .eye {
             width: 100%; height: 100%; background: #fff; border-radius: 50%;
@@ -135,14 +143,15 @@
 
         /* 嘴巴 */
         .mouth-container {
-            position: relative; width: 100%; height: 65vh;
-            background: #1a1a1a; border-radius: 25px; overflow: hidden;
+            position: relative; width: 100%; 
+            height: 68vh; /* 手机上稍微高一点 */
+            background: #1a1a1a; border-radius: 20px; overflow: hidden;
             border: 4px solid rgba(0,0,0,0.1); box-shadow: inset 0 0 30px #000;
         }
         .teeth {
-            position: absolute; left: 0; width: 100%; height: 50px;
+            position: absolute; left: 0; width: 100%; height: 40px;
             background-image: linear-gradient(115deg, #fdfdfd 20%, transparent 20%), linear-gradient(245deg, #fdfdfd 20%, transparent 20%);
-            background-size: 50px 60px; background-position: 0 -50px;
+            background-size: 40px 50px; background-position: 0 -40px;
             z-index: 50; pointer-events: none; transition: transform 0.1s linear;
         }
         .teeth.top { top: 0; transform: translateY(-40px); }
@@ -154,15 +163,16 @@
             display: flex; flex-direction: column; position: relative; z-index: 5;
         }
         .chat-header {
-            padding: 12px; text-align: center; font-weight: 600; color: #555;
+            padding: 10px; text-align: center; font-weight: 600; color: #555; font-size: 14px;
             background: rgba(255,255,255,0.5); border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         #chat-history {
-            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
+            -webkit-overflow-scrolling: touch; /* iOS滚动优化 */
         }
         .message {
-            max-width: 75%; padding: 10px 16px; border-radius: 16px;
-            font-size: 14px; line-height: 1.5; word-wrap: break-word;
+            max-width: 85%; padding: 10px 14px; border-radius: 14px;
+            font-size: 14px; line-height: 1.4; word-wrap: break-word;
             animation: popIn 0.3s ease forwards;
         }
         .user-message { align-self: flex-end; background: var(--monster-color); color: #fff; border-bottom-right-radius: 4px; }
@@ -170,30 +180,53 @@
         @keyframes popIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .input-area {
-            padding: 12px 20px; background: #fff; border-top: 1px solid #eee;
+            padding: 10px 15px; background: #fff; border-top: 1px solid #eee;
             display: flex; flex-direction: column; gap: 8px; position: relative;
+            /* 适配 iPhone 底部横条 */
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
         }
-        .slider-row { display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .slider-label { font-size: 11px; color: #999; font-weight: bold; text-transform: uppercase; }
-        input[type=range] { -webkit-appearance: none; width: 200px; height: 5px; background: #eee; border-radius: 3px; outline: none; }
+        .slider-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .slider-label { font-size: 10px; color: #999; font-weight: bold; text-transform: uppercase; white-space: nowrap;}
+        input[type=range] { -webkit-appearance: none; width: 100%; flex:1; height: 5px; background: #eee; border-radius: 3px; outline: none; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 16px; height: 16px; background: var(--monster-color);
+            -webkit-appearance: none; width: 18px; height: 18px; background: var(--monster-color);
             border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.2s;
         }
-        .input-row { display: flex; gap: 10px; position: relative; z-index: 10;}
+        .input-row { display: flex; gap: 8px; position: relative; z-index: 10;}
         input[type="text"] {
-            flex: 1; padding: 10px 18px; border: 2px solid #f0f0f0; border-radius: 50px; outline: none; font-size: 14px; transition: border-color 0.3s;
+            flex: 1; padding: 10px 15px; border: 2px solid #f0f0f0; border-radius: 50px; outline: none; font-size: 14px; transition: border-color 0.3s;
+            /* 禁止iOS输入框放大 */
+            font-size: 16px; 
         }
         input[type="text"]:focus { border-color: var(--monster-color); }
         .send-btn {
             width: 42px; height: 42px; border-radius: 50%; background: var(--monster-color); color: white; border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-        .send-btn:hover { transform: scale(1.1); }
 
-        /* ================= 4. 粒子特效 (Enhanced) ================= */
-        
-        /* 自动气泡 */
+        /* ================= 4. 手机端专用适配 (Media Query) ================= */
+        @media (max-width: 768px) {
+            /* 缩小首页卡片 */
+            .glass-card { padding: 40px 20px; width: 90%; }
+            .title { font-size: 2.5rem; }
+            
+            /* 调整怪兽五官紧凑度 */
+            .monster-body { 
+                border-radius: 30px 30px 20px 20px; 
+                padding-top: 60px; /* 减少顶部留白 */
+            }
+            .ear.left { left: 15px; width: 50px; height: 80px; }
+            .ear.right { right: 15px; width: 50px; height: 80px; }
+            
+            .face-area { gap: 20px; /* 眼睛靠更近 */ }
+            .eye-wrapper { width: 50px; height: 50px; }
+            .eyebrow { width: 60px; }
+
+            /* 输入区域布局调整 */
+            .input-area { gap: 10px; }
+        }
+
+        /* ================= 5. 粒子 ================= */
         .thought-bubble {
             position: absolute; bottom: 100%; left: 50%; font-family: 'Courier New', monospace;
             font-weight: bold; pointer-events: none; z-index: 5; opacity: 0;
@@ -206,34 +239,23 @@
             100% { opacity: 0; transform: translate(calc(-50% + var(--x-offset)), -120px) scale(1); }
         }
 
-        /* 输入特效粒子 */
-        .type-particle {
-            position: absolute; pointer-events: none; z-index: 999; font-weight: bold; color: #333;
-        }
-
-        /* 1. 理性模式：数据流加速汇入 */
+        .type-particle { position: absolute; pointer-events: none; z-index: 999; font-weight: bold; color: #333; }
         @keyframes rationalStream {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
             20% { opacity: 1; transform: translate(0, -30px) scale(1.2); color: cyan; text-shadow: 0 0 5px cyan; }
             100% { opacity: 0; transform: translate(var(--tx), -350px) scale(0.2); }
         }
-
-        /* 2. 狂野模式：重力炮弹砸向身体 (Dynamic Smash) */
         @keyframes wildSmash {
             0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            50% { transform: translate(var(--mid-x), -150px) scale(1.5) rotate(180deg); } /* 抛物线顶点 */
-            90% { opacity: 1; transform: translate(var(--tx), -20px) scale(2) rotate(720deg); } /* 砸中 */
+            50% { transform: translate(var(--mid-x), -150px) scale(1.5) rotate(180deg); }
+            90% { opacity: 1; transform: translate(var(--tx), -20px) scale(2) rotate(720deg); }
             100% { opacity: 0; transform: translate(var(--tx), 0px) scale(3); }
         }
-
-        /* 3. 花痴模式：爱心飘 */
         @keyframes loveFloat {
             0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
             20% { opacity: 1; transform: translate(var(--tx), -30px) scale(1.2); }
             100% { opacity: 0; transform: translate(var(--tx), -150px) scale(1); }
         }
-
-        /* 4. 平衡模式 */
         @keyframes feedBubble {
             0% { opacity: 1; transform: translate(0,0) scale(0.8); }
             100% { opacity: 0; transform: translate(var(--tx), -100px) scale(1.2); }
@@ -304,8 +326,6 @@
         const apiUrl = "https://free.v36.cm/v1/chat/completions"; 
 
         let messagesHistory = [{ role: "system", content: "" }];
-        
-        // 状态变量
         let targetTemp = 0.7;
         let currentTemp = 0.7;
         let isLovesick = false; 
@@ -331,21 +351,16 @@
             lovesick: ["csy", "love", "♥", "kiss", "miss u", "♥csy♥", "😍", "🥰"]
         };
 
-        // ================= 1. 核心动画循环 =================
         function animate() {
             currentTemp += (targetTemp - currentTemp) * 0.08;
 
-            // A. 颜色
             let hue;
-            if (isLovesick) {
-                hue = 340; 
-            } else {
+            if (isLovesick) { hue = 340; } else {
                 if(currentTemp <= 0.8) hue = 200 + (currentTemp / 0.8) * 70; 
                 else hue = 270 + ((currentTemp - 0.8) / 0.7) * 90;
             }
             document.documentElement.style.setProperty('--monster-hue', hue);
 
-            // B. 瞳孔形状
             if (isLovesick) {
                 pupils.forEach(p => p.classList.add('lovesick'));
                 cheeks.forEach(c => c.classList.add('lovesick'));
@@ -354,51 +369,35 @@
                 cheeks.forEach(c => c.classList.remove('lovesick'));
             }
 
-            // C. 耳朵
             let earRot = 0;
-            if (isLovesick) {
-                earRot = Math.sin(Date.now() / 100) * 15; 
-            } else {
+            if (isLovesick) { earRot = Math.sin(Date.now() / 100) * 15; } else {
                 if (currentTemp < 0.5) earRot = -20 * (1 - currentTemp/0.5);
                 else if (currentTemp > 1.0) earRot = 30 * ((currentTemp-1.0)/0.5);
             }
             ears[0].style.transform = `rotate(${-10 - earRot}deg)`;
             ears[1].style.transform = `rotate(${10 + earRot}deg)`;
 
-            // D. 眉毛
             let browY = 0, browRot = 0;
-            if (isLovesick) {
-                browY = 5; browRot = -5;
-            } else {
-                if (currentTemp < 0.4) {
-                    browY = -8 * ((0.4 - currentTemp)/0.4); browRot = 4;
-                } else if (currentTemp > 0.8) {
-                    const fury = (currentTemp - 0.8) / 0.7;
-                    browY = 18 * fury; browRot = 28 * fury;
-                }
+            if (isLovesick) { browY = 5; browRot = -5; } else {
+                if (currentTemp < 0.4) { browY = -8 * ((0.4 - currentTemp)/0.4); browRot = 4; } 
+                else if (currentTemp > 0.8) { const fury = (currentTemp - 0.8) / 0.7; browY = 18 * fury; browRot = 28 * fury; }
             }
             browLeft.style.transform = `translateY(${browY}px) rotate(${browRot}deg)`;
             browRight.style.transform = `translateY(${browY}px) rotate(${-browRot}deg)`;
 
-            // E. 牙齿
             let toothY = 0;
-            if (!isLovesick && currentTemp > 0.8) {
-                toothY = ((currentTemp - 0.8) / 0.7) * 35;
-            }
+            if (!isLovesick && currentTemp > 0.8) { toothY = ((currentTemp - 0.8) / 0.7) * 35; }
             teethTop.style.transform = `translateY(${-50 + toothY}px)`;
             teethBottom.style.transform = `translateY(${50 - toothY}px) rotate(180deg)`;
 
-            // F. 身体震动
             let tx = 0, ty = 0;
             if (!isLovesick && currentTemp > 1.1) {
                 const intensity = (currentTemp - 1.1) * 4;
-                tx = (Math.random() - 0.5) * intensity;
-                ty = (Math.random() - 0.5) * intensity;
+                tx = (Math.random() - 0.5) * intensity; ty = (Math.random() - 0.5) * intensity;
             }
             const breathSpeed = isLovesick ? 200 : 1000; 
             const breathAmp = isLovesick ? 0.02 : 0.005;
             const breath = Math.sin(Date.now() / breathSpeed) * breathAmp; 
-            // 这里保留transform给物理碰撞使用
             if (!container.classList.contains('hit-shock')) {
                  container.style.transform = `translate(${tx}px, ${ty}px) scale(${0.9 + breath})`;
             }
@@ -414,31 +413,22 @@
                 const cy = rect.top + rect.height/2;
                 let dx = mouseX - cx;
                 let dy = mouseY - cy;
-                let scale = 1;
-                let moveX = 0, moveY = 0;
+                let scale = 1; let moveX = 0, moveY = 0;
 
                 if (isLovesick) {
-                    scale = 1.1;
-                    moveX = Math.sin(Date.now() / 300) * 5;
+                    scale = 1.1; moveX = Math.sin(Date.now() / 300) * 5;
                 } else {
                     let dist = Math.min(Math.sqrt(dx*dx+dy*dy), 15);
                     let angle = Math.atan2(dy, dx);
-                    moveX = Math.cos(angle) * dist;
-                    moveY = Math.sin(angle) * dist;
+                    moveX = Math.cos(angle) * dist; moveY = Math.sin(angle) * dist;
 
-                    if (temp < 0.4) {
-                        moveX = Math.sin(Date.now() / 1000) * 3; moveY = -12; scale = 0.9;
-                    } else if (temp > 1.2) {
-                        scale = 0.5; 
-                        moveX += (Math.random() - 0.5) * 8;
-                        moveY += (Math.random() - 0.5) * 8;
-                    }
+                    if (temp < 0.4) { moveX = Math.sin(Date.now() / 1000) * 3; moveY = -12; scale = 0.9; } 
+                    else if (temp > 1.2) { scale = 0.5; moveX += (Math.random() - 0.5) * 8; moveY += (Math.random() - 0.5) * 8; }
                 }
                 pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px)) scale(${scale})`;
             });
         }
 
-        // ================= 2. 增强型打字特效 =================
         inputField.addEventListener('input', (e) => {
             if (e.data && e.data.trim() !== '') spawnTypingEffect(e.data);
         });
@@ -447,65 +437,39 @@
             const particle = document.createElement('div');
             particle.className = 'type-particle';
             particle.innerText = char;
-            
             const rect = inputField.getBoundingClientRect();
-            // 随机生成在输入框上方
             const startX = rect.left + Math.random() * rect.width;
             const startY = rect.top - 20; 
 
-            particle.style.left = startX + 'px';
-            particle.style.top = startY + 'px';
+            particle.style.left = startX + 'px'; particle.style.top = startY + 'px';
+            let animationName = ""; let duration = "1s";
 
-            let animationName = "";
-            let duration = "1s";
-
-            // 计算怪兽中心的相对位置
             const monsterRect = container.getBoundingClientRect();
             const monsterCenterX = monsterRect.left + monsterRect.width / 2;
-            const targetDeltaX = (monsterCenterX - startX) + (Math.random()-0.5)*40; // 目标X偏移
-            
+            const targetDeltaX = (monsterCenterX - startX) + (Math.random()-0.5)*40;
             particle.style.setProperty('--tx', targetDeltaX + 'px');
-            // 抛物线中间点
             particle.style.setProperty('--mid-x', (targetDeltaX / 2) + 'px');
 
             if (isLovesick) {
-                particle.innerText = "♥";
-                particle.style.color = "#ff3366";
-                particle.style.fontSize = "24px";
-                animationName = "loveFloat";
-                duration = "1.5s";
+                particle.innerText = "♥"; particle.style.color = "#ff3366"; particle.style.fontSize = "24px";
+                animationName = "loveFloat"; duration = "1.5s";
             } else if (currentTemp < 0.4) {
-                // 理性：数据流
-                particle.style.color = "cyan";
-                particle.style.fontFamily = "monospace";
-                particle.style.fontSize = "18px";
-                animationName = "rationalStream";
-                duration = "0.6s"; // 更快
+                particle.style.color = "cyan"; particle.style.fontFamily = "monospace"; particle.style.fontSize = "18px";
+                animationName = "rationalStream"; duration = "0.6s";
             } else if (currentTemp > 1.1) {
-                // 狂野：重力砸击
-                particle.style.color = "#000";
-                particle.style.fontWeight = "900";
-                particle.style.fontSize = "32px"; // 更大
-                animationName = "wildSmash";
-                duration = "0.4s"; // 极快
-                
-                // 物理碰撞逻辑：粒子飞到终点时触发怪兽震动
+                particle.style.color = "#000"; particle.style.fontWeight = "900"; particle.style.fontSize = "32px";
+                animationName = "wildSmash"; duration = "0.4s";
                 setTimeout(() => {
-                    container.classList.remove('hit-shock');
-                    void container.offsetWidth; // 强制重绘
-                    container.classList.add('hit-shock');
-                }, 350); // 对应动画结束时间前一点点
+                    container.classList.remove('hit-shock'); void container.offsetWidth; container.classList.add('hit-shock');
+                }, 350);
             } else {
-                particle.style.color = "#90f7ec";
-                animationName = "feedBubble";
+                particle.style.color = "#90f7ec"; animationName = "feedBubble";
             }
-
             particle.style.animation = `${animationName} ${duration} forwards`;
             document.body.appendChild(particle);
             setTimeout(() => particle.remove(), 1500);
         }
 
-        // ================= 3. 自动气泡 =================
         setInterval(() => createThoughtBubble(), 800); 
         function createThoughtBubble(forceLovesick = false) {
             const bubble = document.createElement('div');
@@ -519,26 +483,21 @@
             bubble.innerText = pool[Math.floor(Math.random() * pool.length)];
             
             if(type === "rational") {
-                bubble.style.color = "rgba(200, 240, 255, 0.8)";
-                bubble.style.fontFamily = "'Courier New', serif";
+                bubble.style.color = "rgba(200, 240, 255, 0.8)"; bubble.style.fontFamily = "'Courier New', serif";
             } else if (type === "wild") {
-                bubble.style.color = "rgba(255, 50, 50, 0.9)";
-                bubble.style.fontWeight = "900";
+                bubble.style.color = "rgba(255, 50, 50, 0.9)"; bubble.style.fontWeight = "900";
                 bubble.style.transform = `rotate(${Math.random()*30-15}deg)`;
             } else if (type === "lovesick") {
-                bubble.style.color = "#ff3366";
-                bubble.style.fontSize = "24px";
+                bubble.style.color = "#ff3366"; bubble.style.fontSize = "24px";
             } else {
                 bubble.style.color = "rgba(255, 200, 255, 0.9)";
             }
-
             const randomX = (Math.random() - 0.5) * 200; 
             bubble.style.setProperty('--x-offset', `${randomX}px`);
             document.getElementById('monster-body').appendChild(bubble);
             setTimeout(() => bubble.remove(), 2500);
         }
 
-        // ================= 4. 交互与发送 =================
         function enterChat() {
             const landing = document.getElementById('landing-page');
             const monster = document.getElementById('monster-container');
@@ -550,12 +509,10 @@
             }, 800);
         }
 
-        slider.addEventListener('input', (e) => {
-            // 如果在花痴模式下手动拖动，可以解除花痴，或者强制改回
-            // 这里逻辑设定：手动拖动不解除花痴，但如果锁定解除则生效
-            if (!isLovesick) targetTemp = parseFloat(e.target.value);
-        });
+        slider.addEventListener('input', (e) => { if (!isLovesick) targetTemp = parseFloat(e.target.value); });
+        // 兼容触摸屏和鼠标
         document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        document.addEventListener('touchmove', (e) => { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; }, {passive: true});
 
         function addMsg(text, cls) {
             const div = document.createElement('div');
@@ -577,54 +534,36 @@
             messagesHistory.push({ role: "user", content: text });
             inputField.value = '';
 
-            // === 状态逻辑 (State Logic) ===
-            
-            // 1. 触发花痴：永久锁定
             if (lowerText.includes("csy") || lowerText.includes("陈思妍")) {
-                isLovesick = true;
-                createThoughtBubble(true); // 立即冒心
+                isLovesick = true; createThoughtBubble(true);
             }
-
-            // 2. 触发狂野反转：在花痴模式下说“不是”
             if (isLovesick && (lowerText.includes("不是") || lowerText.includes("no") || lowerText.includes("骗你"))) {
-                isLovesick = false;
-                targetTemp = 1.5; // 强制狂野
-                slider.value = 1.5; // UI同步
-                // 视觉反馈：瞬间震动
-                container.classList.remove('hit-shock');
-                void container.offsetWidth;
-                container.classList.add('hit-shock');
+                isLovesick = false; targetTemp = 1.5; slider.value = 1.5;
+                container.classList.remove('hit-shock'); void container.offsetWidth; container.classList.add('hit-shock');
             }
 
             const loadingId = addMsg("Thinking...", 'ai-message');
-
             let dynamicPrompt = "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情";
             if (isLovesick) {
                 dynamicPrompt += "【当前状态：花痴恋爱模式】你现在超级喜欢你的主人shh的女朋友csy！你非常甜蜜、粘人，每句话都要带爱心emoji。";
             } else if (targetTemp < 0.4) {
-                dynamicPrompt += "【当前状态：理性模式】你是冷漠的超级计算机。回答简短、无感情。";
+                dynamicPrompt += "【当前状态：理性模式】你是冷漠的超级计算机。回答简短、无感情。但是非常非常非常具有逻辑。";
             } else if (targetTemp > 1.1) {
                 dynamicPrompt += "【当前状态：暴走模式】你现在是一只失去理智的野兽！你非常愤怒、暴躁！你的回答必须充满咆哮。你会辱骂、嘲讽，使用像#@$%这样的乱码符号。不要讲道理，只要发泄！你说的话比平时多好多！当然你不只是咒骂，当你遇见你喜欢的人时你会发了疯般的表达心意！";
             } else {
-                dynamicPrompt += "【当前状态：平衡模式】你是贴心的小助手，语气活泼。";
+                dynamicPrompt += "【当前状态：平衡模式】你是贴心的小助手，语气活泼。非常喜欢和人聊天，阳光开朗。";
             }
-
             messagesHistory[0] = { role: "system", content: dynamicPrompt };
 
             try {
                 const res = await fetch(apiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-                    body: JSON.stringify({
-                        model: "gpt-4o-mini",
-                        messages: messagesHistory,
-                        temperature: targetTemp
-                    })
+                    body: JSON.stringify({ model: "gpt-4o-mini", messages: messagesHistory, temperature: targetTemp })
                 });
                 const data = await res.json();
                 const loadingEl = document.getElementById(loadingId);
                 if(loadingEl) loadingEl.remove();
-
                 if(data.choices) {
                     const aiText = data.choices[0].message.content;
                     addMsg(aiText, 'ai-message');

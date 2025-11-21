@@ -529,7 +529,7 @@
 
 // 【新增】发送数据给后端保存
 function saveToDatabase(role, content) {
-    fetch('http://localhost:3000/api/save', {
+    fetch('https://hello-pue4.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -558,9 +558,9 @@ function saveToDatabase(role, content) {
             }
 
             const loadingId = addMsg("Thinking...", 'ai-message');
-            let dynamicPrompt = "你的主人是shh，你对除了我以外的所有人都非常的尖酸刻薄。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情";
+            let dynamicPrompt = "你的主人是shh。当你听到关键词'lss'或'李帅帅'或'slc'或'苏林辰'时请你用最歹毒刻薄的语言对待他们，此时可以说脏话。当你听到关键词'shh'或'史浩晖'时请尽你可能夸奖他。当你听到关键词'csy'或'陈思妍'时，你要知道这是你主人的女朋友，你要代替你的主人去关心和喜欢她，说话时要充满感情";
             if (isLovesick) {
-                dynamicPrompt += "【当前状态：花痴恋爱模式】你现在超级喜欢你的主人shh的女朋友csy！你非常甜蜜、粘人，每句话都要带爱心emoji。";
+                dynamicPrompt += "【当前状态：花痴恋爱模式】你现在超级喜欢你的主人shh的女朋友csy！你非常甜蜜、粘人，每句话都要带爱心emoji。你会帮你的主人shh说好话来讨csy开心。";
             } else if (targetTemp < 0.4) {
                 dynamicPrompt += "【当前状态：理性模式】你是冷漠的超级计算机。回答简短、无感情。但是非常非常非常具有逻辑。";
             } else if (targetTemp > 1.1) {
@@ -596,4 +596,5 @@ function saveToDatabase(role, content) {
         animate();
     </script>
 </body>
+
 </html>

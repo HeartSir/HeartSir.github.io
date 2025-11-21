@@ -527,7 +527,7 @@
 
 // 【新增】发送数据给后端保存
 function saveToDatabase(role, content) {
-    fetch('http://localhost:3000/api/save', {
+    fetch('https://hello-pue4.onrender.com/api/save', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -595,4 +595,5 @@ function saveToDatabase(role, content) {
         animate();
     </script>
 </body>
+
 </html>
